@@ -6,4 +6,5 @@ struct Csc{
     int* col_index;
 };
 
-int mtx_to_csc(struct csc *csc, char* file);
+int my_csc_mtx_to_csc(struct Csc *csc, char* file);
+int* my_csc_trim(struct Csc *csc);

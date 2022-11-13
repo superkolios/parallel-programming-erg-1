@@ -1,5 +1,5 @@
-
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include "mmio.h"
 #include "my_csc.h"
@@ -9,7 +9,7 @@
 *   This function is based on Matrix Market I/O example program
 *   http://math.nist.gov/MatrixMarket/mmio/c/example_read.c
 */
-int my_cscx_mtx_to_csc(struct csc* csc, char* file)
+int my_csc_mtx_to_csc(struct Csc* csc, char* file)
 {
     int ret_code;
     MM_typecode matcode;
@@ -17,10 +17,8 @@ int my_cscx_mtx_to_csc(struct csc* csc, char* file)
     int M, N, nz;   
     int i;
   
-    { 
         if ((f = fopen(file, "r")) == NULL) 
             exit(1);
-    }
 
     if (mm_read_banner(f, &matcode) != 0)
     {
@@ -86,4 +84,34 @@ int my_cscx_mtx_to_csc(struct csc* csc, char* file)
     csc->nz = nz;
     if (f !=stdin) fclose(f);
     return 0;
+}
+
+int* my_csc_trim(struct Csc *csc){
+    int* no_edge_in = (int*)malloc(csc->n * sizeof(bool));
+    int* no_edge_out = (int*)malloc(csc->n * sizeof(bool));
+    int* to_trim = (int*)malloc(csc->n * sizeof(bool));
+    for (int i = 0; i < csc->n; i++){
+        no_edge_in[i] = true;
+        no_edge_out[i] = true;
+        to_trim[i] = false;
+    }
+    
+    //if the same number appears twice in a row in row_index the this node has no in edges.
+    for (int i = 0; i < csc->n; i++){
+        if (csc->col_index[i] != csc->col_index[i+1]){
+            no_edge_in[i] = false;
+        }
+    }
+
+    //checks if atleast a node shows 1 time in col_index.
+    for (int i = 0; i < csc->nz; i++){
+        no_edge_out[csc->row_index[i]] = false;
+    }
+    
+    for (int i = 0; i < csc->n; i++){
+        if (no_edge_in[i] || no_edge_out[i]){
+            to_trim[i] = true;
+        }
+    }
+    return(to_trim);
 }
