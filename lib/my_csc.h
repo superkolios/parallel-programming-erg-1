@@ -7,4 +7,4 @@ struct Csc{
 };
 
 int my_csc_mtx_to_csc(struct Csc *csc, char* file);
-int* my_csc_trim(struct Csc *csc);
+bool* my_csc_trim(struct Csc *csc);

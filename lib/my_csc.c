@@ -52,6 +52,11 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     int I=0, prev_I=0;
     csc->col_index[0] = 0;
     csc->col_index[M] = nz;
+    
+    csc->m = M;
+    csc->n = N;
+    csc->nz = nz;
+    
     double value;
     if (!mm_is_pattern(matcode)){
         for (i=0; i<nz; i++)
@@ -79,17 +84,18 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
             csc->row_index[i]--;
         }
     }
-    csc->m = M;
-    csc->n = N;
-    csc->nz = nz;
+
+    for (prev_I = prev_I+1; prev_I<csc->n; prev_I++){
+        csc->col_index[prev_I] = i;
+    }
     if (f !=stdin) fclose(f);
     return 0;
 }
 
-int* my_csc_trim(struct Csc *csc){
-    int* no_edge_in = (int*)malloc(csc->n * sizeof(bool));
-    int* no_edge_out = (int*)malloc(csc->n * sizeof(bool));
-    int* to_trim = (int*)malloc(csc->n * sizeof(bool));
+bool* my_csc_trim(struct Csc *csc){
+    bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
+    bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
+    bool* to_trim = (bool*)malloc(csc->n * sizeof(bool));
     for (int i = 0; i < csc->n; i++){
         no_edge_in[i] = true;
         no_edge_out[i] = true;
