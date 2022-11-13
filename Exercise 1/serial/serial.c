@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include <mmio.h>
 #include <my_csc.h>
-#include <my_coloring_algorithm.h>
+//#include <my_coloring_algorithm.h>
 
 
-int main(int argc, char *argc[]){
+int main(int argc, char *argv[]){
 
     if (argc != 2){
         fprintf(stderr, "Usage: %s [martix-market-filename]\n", argv[0]);
@@ -14,7 +16,7 @@ int main(int argc, char *argc[]){
     struct Csc csc;
     my_csc_mtx_to_csc(&csc, argv[1]);
 
-    my_csc_trim(&csc);
+    bool *trim = my_csc_trim(&csc);
 
     int *result;
     my_coloring_scc_algorithm(&csc, &result);
