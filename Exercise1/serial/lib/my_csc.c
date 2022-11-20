@@ -46,8 +46,8 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
 
     
     /* reseve memory for matrices */
-    csc->col_index = (int*) malloc (nz * sizeof(int));
-    csc->row_index = (int*) malloc ((M+1) * sizeof(int));
+    csc->row_index = (int*) malloc (nz * sizeof(int));
+    csc->col_index = (int*) malloc ((M+1) * sizeof(int));
 
     int I=0, prev_I=0;
     csc->col_index[0] = 0;
@@ -56,7 +56,10 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     csc->m = M;
     csc->n = N;
     csc->nz = nz;
-    
+    csc->valid_nodes = (bool*)malloc(N * sizeof(bool));
+    for (int i = 0; i < N; i++){
+        csc->valid_nodes[i] = true;
+    }
     double value;
     if (!mm_is_pattern(matcode)){
         for (i=0; i<nz; i++)
@@ -92,32 +95,46 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     return 0;
 }
 
-bool* my_csc_trim(struct Csc *csc){
+bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
     bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
     bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
-    bool* to_trim = (bool*)malloc(csc->n * sizeof(bool));
     for (int i = 0; i < csc->n; i++){
         no_edge_in[i] = true;
         no_edge_out[i] = true;
-        to_trim[i] = false;
     }
     
-    //if the same number appears twice in a row in row_index the this node has no in edges.
-    for (int i = 0; i < csc->n; i++){
-        if (csc->col_index[i] != csc->col_index[i+1]){
-            no_edge_in[i] = false;
+    for (int v = 0; v < csc->n; v++){
+        if(!csc->valid_nodes[v])
+            continue;
+        int start = csc->col_index[v];
+        int end = csc->col_index[v+1];
+        for (int u = start; u < end; u++){
+            if(!csc->valid_nodes[csc->row_index[u]])
+                continue;
+            no_edge_in[v] = false;
+            no_edge_out[csc->row_index[u]] = false;
+            }
         }
-    }
-
-    //checks if atleast a node shows 1 time in col_index.
-    for (int i = 0; i < csc->nz; i++){
-        no_edge_out[csc->row_index[i]] = false;
-    }
-    
     for (int i = 0; i < csc->n; i++){
         if (no_edge_in[i] || no_edge_out[i]){
-            to_trim[i] = true;
+            if (to_trim[i] == false){
+                to_trim[i] = true;
+                *has_changed = true;
+                csc->valid_nodes[i] = false;  //remove node from graph
+            }
         }
     }
+    free(no_edge_in);
+    free(no_edge_out);
     return(to_trim);
+}
+
+bool* my_rec_csc_trim(struct Csc *csc){
+    bool has_changed = true;
+    bool* to_trim = (bool*)calloc(csc->n, sizeof(bool));
+    while(has_changed){
+        has_changed = false;
+        my_csc_trim(csc, to_trim, &has_changed);
+    }
+    return to_trim;
 }
