@@ -48,6 +48,10 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     /* reseve memory for matrices */
     csc->row_index = (int*) malloc (nz * sizeof(int));
     csc->col_index = (int*) malloc ((M+1) * sizeof(int));
+    if (csc->row_index == NULL || csc->col_index == NULL){
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(1);
+    }
 
     int I=0, prev_I=0;
     csc->col_index[0] = 0;
@@ -56,8 +60,12 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     csc->m = M;
     csc->n = N;
     csc->nz = nz;
-    csc->remaining = nz;
+    csc->remaining = N;
     csc->valid_nodes = (bool*)malloc(N * sizeof(bool));
+    if (csc->valid_nodes == NULL){
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(1);
+    }
     for (int i = 0; i < N; i++){
         csc->valid_nodes[i] = true;
     }
@@ -99,6 +107,10 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
 bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
     bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
     bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
+    if (no_edge_in == NULL || no_edge_out == NULL){
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(1);
+    }
     for (int i = 0; i < csc->n; i++){
         no_edge_in[i] = true;
         no_edge_out[i] = true;
@@ -134,6 +146,10 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
 bool* my_rec_csc_trim(struct Csc *csc){
     bool has_changed = true;
     bool* to_trim = (bool*)calloc(csc->n, sizeof(bool));
+    if (to_trim == NULL){
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(1);
+    }
     while(has_changed){
         has_changed = false;
         my_csc_trim(csc, to_trim, &has_changed);
