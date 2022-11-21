@@ -56,6 +56,7 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     csc->m = M;
     csc->n = N;
     csc->nz = nz;
+    csc->remaining = nz;
     csc->valid_nodes = (bool*)malloc(N * sizeof(bool));
     for (int i = 0; i < N; i++){
         csc->valid_nodes[i] = true;
@@ -121,6 +122,7 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
                 to_trim[i] = true;
                 *has_changed = true;
                 csc->valid_nodes[i] = false;  //remove node from graph
+                csc->remaining -= 1;
             }
         }
     }
