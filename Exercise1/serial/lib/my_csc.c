@@ -69,11 +69,14 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     for (int i = 0; i < N; i++){
         csc->valid_nodes[i] = true;
     }
-    double value;
+
     if (!mm_is_pattern(matcode)){
         for (i=0; i<nz; i++)
         {
-            fscanf(f, "%d %d %lg\n", &csc->row_index[i], &I, &value);
+            if (fscanf(f, "%d %d %*[^\n] \n", &csc->row_index[i], &I) == EOF){
+                fprintf(stderr, "Error reading file\n");
+                exit(1);
+            }
             I--;  /* adjust from 1-based to 0-based */
             if (I > prev_I){
                 for (prev_I; prev_I < I; prev_I++){
@@ -86,7 +89,10 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     else{
         for (i=0; i<nz; i++)
         {
-            fscanf(f, "%d %d\n", &csc->row_index[i], &I);
+            if(fscanf(f, "%d %d\n", &csc->row_index[i], &I) == EOF){
+                fprintf(stderr, "Error reading file\n");
+                exit(1);
+            }
             I--;  /* adjust from 1-based to 0-based */
             if (I > prev_I){
                 for (prev_I; prev_I < I; prev_I++){
@@ -102,6 +108,13 @@ int my_csc_mtx_to_csc(struct Csc* csc, char* file)
     }
     if (f !=stdin) fclose(f);
     return 0;
+}
+
+void my_csc_free(struct Csc *csc){
+    free(csc->col_index);
+    free(csc->row_index);
+    free(csc->valid_nodes);
+
 }
 
 bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
