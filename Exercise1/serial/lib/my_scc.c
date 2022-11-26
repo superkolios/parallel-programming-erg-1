@@ -14,6 +14,8 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size){
     int *to_visit = (int*)malloc(csc->n * sizeof(int));
     to_visit[0] = c;
     visited[c] = true;
+    csc->valid_nodes[c] = false;
+    csc->remaining -= 1;
     int to_visit_prt = 1;
     *size = 1;
 
@@ -30,105 +32,84 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size){
                 to_visit_prt++;
                 visited[node] = true;
                 (*size)++;
-                // printf("+size: %d\n", *size);
-                // printf("add: %d\n", node);
+                csc->valid_nodes[node] = false;
+                csc->remaining -= 1;
             }
         }
     }
-    int counter2 = 0;
-    int *scc = (int*)malloc(*size * sizeof(int));
-    for (int i = 0; i < csc->n; i++){
-        if (visited[i]){
-            // printf("add%d: %d\n", c, i);
-            scc[counter2] = i;
-            csc->valid_nodes[i] = false;
-            csc->remaining -= 1;
-            counter2++;
-        }
-        if (counter2 == *size){
-            break;
-        }
-    }
-    // printf("----------------------\nsize: %d\n", *size);
-    return scc;
+    free(to_visit);
+    // int counter2 = 0;
+    // int *scc = (int*)malloc(*size * sizeof(int));
+    // for (int i = 0; i < csc->n; i++){
+    //     if (visited[i]){
+    //         // printf("add%d: %d\n", c, i);
+    //         scc[counter2] = i;
+    //         counter2++;
+    //     }
+    //     if (counter2 == *size){
+    //         break;
+    //     }
+    // }
+    free(visited);
+    // return scc;
+    return NULL;
 }
 
 
-void my_coloring_scc_algorithm(struct Csc *csc){
+int* my_coloring_scc_algorithm(struct Csc *csc){
     int* colors = (int*)malloc(csc->n * sizeof(int));
     bool colors_changed;
-
-
-    for (int i=0; i < csc->n; i++){
-        colors[i] = i;
-    }
-
+    int num_of_scc=0;
+    bool* trimmed;
+    // for (int i=0; i < csc->n; i++){
+    //     colors[i] = i;
+    // }
+    // trimmed = my_rec_csc_trim(csc, &num_of_scc);
+    free(trimmed);
     while (csc->remaining != 0){
-        // printf("remaining: %d\n", csc->remaining);
         for (int i=0; i < csc->n; i++){
             if(csc->valid_nodes[i]){
                 colors[i] = i;
             }
         }
+        my_rec_csc_trim(csc, &num_of_scc);
+        free(trimmed);
+        // printf("%d\n" ,csc->remaining);
         colors_changed = true;
         while (colors_changed){
             colors_changed = false;
             for (int v = 0; v < csc->n; v++){
-                // printf("%d\n", v);
                 if(!csc->valid_nodes[v])
                     continue;
-                // printf("%d\n", v);
                 int start = csc->col_index[v];
                 int end = csc->col_index[v+1];
                 for (int u = start; u < end; u++){
-                    // if(v==46){
-                    //     printf("v:46 u:%d", csc->row_index[u]);
-                    //     if(csc->valid_nodes[csc->row_index[u]])
-                    //         printf(" valid");
-                    //     printf("\n");
-                    // }
                     if(!csc->valid_nodes[csc->row_index[u]])
                         continue;
                     if (colors[v] > colors[csc->row_index[u]]){
                         colors[v] = colors[csc->row_index[u]];
                         colors_changed = true;
-                        break;  //we can break because we want colors[v] to take the smallest color of his predecessors and they are sorted.
                     }
                 }
             }
         }
-        // printf("coloring done.\n");
-        // for (int i = 0; i < csc->n; i++){
-        //     printf("%d: %d\n",i, colors[i]);
-        // }
-        // exit(0);
-        // int* unique_colors;
-        bool* checked_colors = calloc(csc->n, sizeof(bool));
         int c;
-        // printf("colors[23]:%d",colors[23]);
-        // printf("colors[46]:%d",colors[46]);
-        // printf("remaining: %d\n", csc->remaining);
         for (int i=0; i < csc->n; i++){
-            // printf("i: %d\n", i);
             c = colors[i];
-            if (!csc->valid_nodes[i] || checked_colors[c])
+            if (!csc->valid_nodes[i] || c != i)
                 continue;
-            // if(i == 23 || i == 46)
-            //     printf("%d %d\n", i, c);
+
+            num_of_scc++;
             int size;
             int *scc = bfs(csc, c, colors, &size);
-            // printf("unique_colors: %d\n", c);
-            // printf("size: %d\n", size);
-            printf("scc %d: ",c);
-            for (int j=0; j < size; j++){
-                printf("%d ", scc[j]);
-            }
-            printf("\n\n");
-            checked_colors[c] = true;
+            // printf("scc %d: ",c);
+            // for (int j=0; j < size; j++){
+            //     printf("%d ", scc[j]);
+            // }
+            // printf("\n");
+            free(scc);
         }
     }
-    printf("\n\n");
-    for (int i = 0; i< csc->n; i++){
-        printf("%d  %d\n", i, colors[i]);
-    }
+    printf("num of scc: %d\n", num_of_scc);
+    return colors;
 }
