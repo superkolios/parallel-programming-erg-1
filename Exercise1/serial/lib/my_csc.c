@@ -117,7 +117,7 @@ void my_csc_free(struct Csc *csc){
 
 }
 
-bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
+bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed, int *num_of_scc){
     bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
     bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
     if (no_edge_in == NULL || no_edge_out == NULL){
@@ -143,11 +143,12 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
         }
     for (int i = 0; i < csc->n; i++){
         if (no_edge_in[i] || no_edge_out[i]){
-            if (to_trim[i] == false){
+            if (csc->valid_nodes[i]){
                 to_trim[i] = true;
                 *has_changed = true;
                 csc->valid_nodes[i] = false;  //remove node from graph
                 csc->remaining -= 1;
+                (*num_of_scc)++;
             }
         }
     }
@@ -156,7 +157,7 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed){
     return(to_trim);
 }
 
-bool* my_rec_csc_trim(struct Csc *csc){
+bool* my_rec_csc_trim(struct Csc *csc, int *num_of_scc){
     bool has_changed = true;
     bool* to_trim = (bool*)calloc(csc->n, sizeof(bool));
     if (to_trim == NULL){
@@ -165,7 +166,7 @@ bool* my_rec_csc_trim(struct Csc *csc){
     }
     while(has_changed){
         has_changed = false;
-        my_csc_trim(csc, to_trim, &has_changed);
+        my_csc_trim(csc, to_trim, &has_changed, num_of_scc);
     }
     return to_trim;
 }
