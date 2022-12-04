@@ -1,0 +1,1 @@
+int* my_coloring_scc_algorithm(struct Csc *csc);
