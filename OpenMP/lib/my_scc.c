@@ -5,12 +5,10 @@
 #include <stdbool.h>
 #include <omp.h>
 
-int* bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *visited){
-    // double time = omp_get_wtime();
+void bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *visited){
     to_visit[0] = c;
     visited[c] = true;
     csc->valid_nodes[c] = false;
-    // csc->remaining -= 1;
     int to_visit_prt = 1;
     *size = 1;
 
@@ -33,27 +31,11 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *vi
                     (*size)++;
                     csc->valid_nodes[node] = false;
                 }
-                // // csc->remaining -= 1;
                 }
             }
         }
     }
-    // free(to_visit);
-    // int counter2 = 0;
-    // int *scc = (int*)malloc(*size * sizeof(int));
-    // for (int i = 0; i < csc->n; i++){
-    //     if (visited[i]){
-    //         // printf("add%d: %d\n", c, i);
-    //         scc[counter2] = i;
-    //         counter2++;
-    //     }
-    //     if (counter2 == *size){
-    //         break;
-    //     }
-    // }
-    // free(visited);
-    // return scc;
-    return NULL;
+    return;
 }
 
 
@@ -63,11 +45,6 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
     int num_of_scc=0;
     bool* trimmed;
     double time;
-    // for (int i=0; i < csc->n; i++){
-    //     colors[i] = i;
-    // }
-    // trimmed = my_rec_csc_trim(csc, &num_of_scc);
-    // free(trimmed);
     while (csc->remaining != 0){
         #pragma omp parallel for
         for (int i=0; i < csc->n; i++){
@@ -75,11 +52,8 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
                 colors[i] = i;
             }
         }
-        time = omp_get_wtime();
         trimmed = my_rec_csc_trim(csc, &num_of_scc);
         free(trimmed);
-        printf("trimming: %fs\n", omp_get_wtime() - time);
-        printf("%d\n" ,csc->remaining);
         colors_changed = true;
         time = omp_get_wtime();
         while (colors_changed){
@@ -100,8 +74,6 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
                 }
             }
         }
-        printf("coloring: %fs\n", omp_get_wtime() - time);
-        time = omp_get_wtime();
         int c, temp_scc_num = 0, removed_nodes = 0;
         #pragma omp parallel
         {
@@ -122,21 +94,14 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
                 continue;
             temp_scc_num++;
             int size;
-            int *scc = bfs(csc, c, colors, &size, to_visit, visited);
+            bfs(csc, c, colors, &size, to_visit, visited);
             removed_nodes += size;
-            // printf("scc %d: ",c);
-            // for (int j=0; j < size; j++){
-            //     printf("%d ", scc[j]);
-            // }
-            // printf("\n");
-            // free(scc);
-        }
+       }
         free(to_visit);
         free(visited);
         }
         num_of_scc += temp_scc_num;
         csc->remaining -= removed_nodes;
-        printf("all bfs: %fs\n", omp_get_wtime() - time);
     }
     printf("num of scc: %d\n", num_of_scc);
     return colors;

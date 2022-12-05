@@ -19,31 +19,15 @@ int main(int argc, char *argv[]){
     seconds = omp_get_wtime();
     my_csc_mtx_to_csc(&csc, argv[1]);
     printf("read file and create matrix: %fs\n", omp_get_wtime() - seconds);
-    // seconds = clock();
-    // // printf("mtx done\n");
-    // bool *trim = my_rec_csc_trim(&csc);
-    // printf("trim: %fs\n", (clock() - seconds) / (float)(float)CLOCKS_PER_SEC);
-    // int num_of_scc = 0;
-    // for (int i = 0; i < csc.n; i++){
-    //     if (trim[i]){
-    //         // printf("css %d: %d\n", i, i);
-    //         num_of_scc += 1;
-    //     }
-    // }
-    // printf("\n");
-    // free(trim);
 
     int *result;
     seconds = omp_get_wtime();
     result = my_coloring_scc_algorithm(&csc);
     printf("my_coloring_scc_algorithm: %fs\n", omp_get_wtime() - seconds);
-    // printf("num of trimmed scc: %d\n", num_of_scc);
-    // for (int i = 0; i< csc.n; i++){
-    //     printf("%d %d\n", i, result[i]);
-    // }
-    // printf("\n");
+    for (int i = 0; i< csc.n; i++){
+        printf("%d %d\n", i, result[i]);
+    }
     free(result);
     my_csc_free(&csc);
     return(0);
 }
-
