@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-int* bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *visited){
+void bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *visited){
     to_visit[0] = c;
     visited[c] = true;
     csc->valid_nodes[c] = false;
@@ -31,22 +31,7 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *vi
             }
         }
     }
-    free(to_visit);
-    // int counter2 = 0;
-    // int *scc = (int*)malloc(*size * sizeof(int));
-    // for (int i = 0; i < csc->n; i++){
-    //     if (visited[i]){
-    //         // printf("add%d: %d\n", c, i);
-    //         scc[counter2] = i;
-    //         counter2++;
-    //     }
-    //     if (counter2 == *size){
-    //         break;
-    //     }
-    // }
-    free(visited);
-    // return scc;
-    return NULL;
+    return;
 }
 
 
@@ -55,11 +40,6 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
     bool colors_changed;
     int num_of_scc=0;
     bool* trimmed;
-    // for (int i=0; i < csc->n; i++){
-    //     colors[i] = i;
-    // }
-    // trimmed = my_rec_csc_trim(csc, &num_of_scc);
-    free(trimmed);
     while (csc->remaining != 0){
         for (int i=0; i < csc->n; i++){
             if(csc->valid_nodes[i]){
@@ -68,7 +48,6 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
         }
         trimmed = my_rec_csc_trim(csc, &num_of_scc);
         free(trimmed);
-        // printf("%d\n" ,csc->remaining);
         colors_changed = true;
         while (colors_changed){
             colors_changed = false;
@@ -102,22 +81,12 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
             c = colors[i];
             if (!csc->valid_nodes[i] || c != i)
                 continue;
-
-            temp_scc_num++;
+            num_of_scc++;
             int size;
-            int *scc = bfs(csc, c, colors, &size, to_visit, visited);
-            removed_nodes += size;
-            // printf("scc %d: ",c);
-            // for (int j=0; j < size; j++){
-            //     printf("%d ", scc[j]);
-            // }
-            // printf("\n");
-            // free(scc);
+            bfs(csc, c, colors, &size, to_visit, visited);
         }
         free(to_visit);
         free(visited);
-        num_of_scc += temp_scc_num;
-        csc->remaining -= removed_nodes;
     }
     printf("num of scc: %d\n", num_of_scc);
     return colors;

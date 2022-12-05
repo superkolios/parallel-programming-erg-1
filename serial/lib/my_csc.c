@@ -117,18 +117,11 @@ void my_csc_free(struct Csc *csc){
 
 }
 
-bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed, int *num_of_scc){
-    bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
-    bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
-    if (no_edge_in == NULL || no_edge_out == NULL){
-        fprintf(stderr, "Memory allocation failed.\n");
-        exit(1);
-    }
+bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed, int *num_of_scc, bool *no_edge_in,  bool *no_edge_out){
     for (int i = 0; i < csc->n; i++){
         no_edge_in[i] = true;
         no_edge_out[i] = true;
     }
-    
     for (int v = 0; v < csc->n; v++){
         if(!csc->valid_nodes[v])
             continue;
@@ -139,8 +132,8 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed, int *num_of
                 continue;
             no_edge_in[v] = false;
             no_edge_out[csc->row_index[u]] = false;
-            }
         }
+    }
     for (int i = 0; i < csc->n; i++){
         if (no_edge_in[i] || no_edge_out[i]){
             if (csc->valid_nodes[i]){
@@ -152,8 +145,6 @@ bool* my_csc_trim(struct Csc *csc, bool *to_trim, bool *has_changed, int *num_of
             }
         }
     }
-    free(no_edge_in);
-    free(no_edge_out);
     return(to_trim);
 }
 
@@ -164,9 +155,18 @@ bool* my_rec_csc_trim(struct Csc *csc, int *num_of_scc){
         fprintf(stderr, "Memory allocation failed.\n");
         exit(1);
     }
+    bool* no_edge_in = (bool*)malloc(csc->n * sizeof(bool));
+    bool* no_edge_out = (bool*)malloc(csc->n * sizeof(bool));
+    if (no_edge_in == NULL || no_edge_out == NULL){
+        fprintf(stderr, "Memory allocation failed.\n");
+        exit(1);
+    }
+
     while(has_changed){
         has_changed = false;
-        my_csc_trim(csc, to_trim, &has_changed, num_of_scc);
+        my_csc_trim(csc, to_trim, &has_changed, num_of_scc, no_edge_in, no_edge_out);
     }
+    free(no_edge_in);
+    free(no_edge_out);
     return to_trim;
 }
