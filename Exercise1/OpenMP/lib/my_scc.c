@@ -5,13 +5,8 @@
 #include <stdbool.h>
 #include <omp.h>
 
-int* bfs(struct Csc *csc, int c, int* colors, int *size){
-    bool *visited = (bool*)calloc(csc->n, sizeof(bool));
-    // for(int i = 0; i < csc->n; i++){
-    //     visited[i] = false;
-    // }    
-
-    int *to_visit = (int*)malloc(csc->n * sizeof(int));
+int* bfs(struct Csc *csc, int c, int* colors, int *size, int *to_visit, bool *visited){
+    // double time = omp_get_wtime();
     to_visit[0] = c;
     visited[c] = true;
     csc->valid_nodes[c] = false;
@@ -29,21 +24,21 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size){
         for (int i = start; i < end; i++){
             int node = csc->row_index[i];
             if (colors[node] == c && !visited[node]){
-                // #pragma omp critical
-                // {
-                // if (!visited[node]){
+                #pragma omp critical
+                {
+                if (!visited[node]){
                     to_visit[to_visit_prt] = node;
                     to_visit_prt++;
                     visited[node] = true;
                     (*size)++;
                     csc->valid_nodes[node] = false;
-                // }
+                }
                 // // csc->remaining -= 1;
-                // }
+                }
             }
         }
     }
-    free(to_visit);
+    // free(to_visit);
     // int counter2 = 0;
     // int *scc = (int*)malloc(*size * sizeof(int));
     // for (int i = 0; i < csc->n; i++){
@@ -56,7 +51,7 @@ int* bfs(struct Csc *csc, int c, int* colors, int *size){
     //         break;
     //     }
     // }
-    free(visited);
+    // free(visited);
     // return scc;
     return NULL;
 }
@@ -108,21 +103,36 @@ int* my_coloring_scc_algorithm(struct Csc *csc){
         printf("coloring: %fs\n", omp_get_wtime() - time);
         time = omp_get_wtime();
         int c, temp_scc_num = 0, removed_nodes = 0;
-        #pragma omp parallel for private(c) reduction(+:temp_scc_num, removed_nodes)
+        #pragma omp parallel
+        {
+        bool *visited = (bool*)calloc(csc->n, sizeof(bool)); 
+        if (visited == NULL){
+            fprintf(stderr, "Memory allocation failed.\n");
+            exit(1);
+        }
+        int *to_visit = (int*)malloc(csc->n * sizeof(int));
+        if (visited == NULL){
+            fprintf(stderr, "Memory allocation failed.\n");
+            exit(1);
+        }
+        #pragma omp for private(c) reduction(+:temp_scc_num, removed_nodes)
         for (int i=0; i < csc->n; i++){
             c = colors[i];
             if (!csc->valid_nodes[i] || c != i)
                 continue;
             temp_scc_num++;
             int size;
-            int *scc = bfs(csc, c, colors, &size);
+            int *scc = bfs(csc, c, colors, &size, to_visit, visited);
             removed_nodes += size;
             // printf("scc %d: ",c);
             // for (int j=0; j < size; j++){
             //     printf("%d ", scc[j]);
             // }
             // printf("\n");
-            free(scc);
+            // free(scc);
+        }
+        free(to_visit);
+        free(visited);
         }
         num_of_scc += temp_scc_num;
         csc->remaining -= removed_nodes;
