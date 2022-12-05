@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>report.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="finding-the-strongly-connected-components-of-a-directed-graph-in-a-shared-memory-multiprocessor">Finding the Strongly Connected Components of a directed graph in a shared memory multiprocessor</h1>
+<p>Τόλιας Φίλιππος
+ΑΕΜ:10252</p>
+<p>Κώδικας: <a href="https://github.com/superkolios/parallel-programming-erg-1">https://github.com/superkolios/parallel-programming-erg-1</a></p>
+<h2 id="%CE%B4%CE%BF%CE%BC%CE%AE-%CE%B4%CE%B5%CE%B4%CE%BF%CE%BC%CE%AD%CE%BD%CF%89%CE%BD">Δομή δεδομένων</h2>
+<p>Η μορφή αποθήκευσης του του γράφου είναι ένας αραιός πίνακας στην μορφη CSC(Compressed Sparse Column). Αυτό έχει υλοποιηθεί σε κώδικα με ένα struct.</p>
+<pre class="hljs"><code><div><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">Csc</span>{</span>
+    <span class="hljs-keyword">int</span> nz;
+    <span class="hljs-keyword">int</span> n;
+    <span class="hljs-keyword">int</span> m;
+    <span class="hljs-keyword">int</span>* row_index;
+    <span class="hljs-keyword">int</span>* col_index;
+    <span class="hljs-keyword">bool</span>* valid_nodes;
+    <span class="hljs-keyword">int</span> remaining;
+};
+</div></code></pre>
+<p><code>nz</code>: non zero elements δηλαδή ο αριθμός των nodes
+<code>n</code>,<code>m</code>: μέγεθος πίνακα δηλαδή αριθμός των edges</p>
+<p><code>valid_nodes</code>: <code>True</code> αν το αντίστοιχο node δεν έχει μπει ακόμα σε κάποιο SCC(Strongly Connected Component) απο τον αλγόριθμο ή False αν έχει μπει.
+<code>remaining</code>: Ο αριθμός των nodes που δεν έχουν μπει ακόμα σε κάποιο SCC απο τον αλγόριθμο.</p>
+<h2 id="%CF%84%CF%81%CF%8C%CF%80%CE%BF%CF%82-%CE%BB%CE%B5%CE%B9%CF%84%CE%BF%CF%85%CF%81%CE%B3%CE%AF%CE%B1%CF%82-%CF%84%CE%BF%CF%85-%CE%B1%CE%BB%CE%B3%CF%8C%CF%81%CE%B9%CE%B8%CE%BC%CE%BF%CF%85">Τρόπος λειτουργίας του αλγόριθμου</h2>
+<p>Αρχικά το πρόγραμμα καλεί την συνάρτηση <code>int my_csc_mtx_to_csc(struct Csc *csc, char* file)</code> για να μετατρέψει το αρχείο <code>.mtx</code> (MatrixMarket) στην δομή CSC.
+Στη συνέχεια καλείται ο αλγόριθμος <code>int* my_coloring_scc_algorithm(struct Csc *csc)</code>, ο οποίος είναι υπεύθυνος για τον εντοπισμό των SCC. Επιστρέφει ένα array που δείχνει σε ποιο SCC ανήκει κάθε node.
+Στην αρχή</p>
+<h2 id="%CF%83%CF%84%CF%81%CE%B1%CF%84%CE%B7%CE%B3%CE%B9%CE%BA%CE%B7-%CF%80%CE%B1%CF%81%CE%B1%CE%BB%CE%BB%CE%B7%CE%BB%CE%BF%CF%80%CE%BF%CE%AF%CE%B7%CF%83%CE%B7%CF%82">Στρατηγικη παραλληλοποίησης</h2>
+<p>Παρραλληλοποίησα τα for loops για τα όποια οι επαναληψεις δεν κάποια εξάρτηση μεταξύ τους και τα for loops για τα οποία η εξάρτηση μπορούσε να λυθεί με reducers.
+Επισης παρραλληλοποίησα και το BFS που είχε εξαρτηση λόγο του array <code>to_visit</code> μαζί με δεικτη θεσης τα οποια λειτουργουν ως ενα FILO(First In Last Out) queue στο οποίο ειναι πολυ πιθανο να γινει κάποιο data race.
+Για να το αντιμετοποισω αυτό το έβαλα σε ενα critical section. Επειδή τα critical sections καθυστερούν την ρόη του προγράμματος εκτελείται μονο οταν είναι απολύτως απαραίτητο, για αυτό και η τιμη visted[i] ελέγχεται και πριν μπει critical section.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">if</span> (colors[node] == c &amp;&amp; !visited[node]){
+    <span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> omp critical</span>
+    {
+        <span class="hljs-keyword">if</span> (!visited[node]){
+            to_visit[to_visit_prt] = node;
+            to_visit_prt++;
+            visited[node] = <span class="hljs-literal">true</span>;
+            (*<span class="hljs-built_in">size</span>)++;
+            csc-&gt;valid_nodes[node] = <span class="hljs-literal">false</span>;
+        }
+    }
+}
+</div></code></pre>
+<p>Επίσης ενα σημαντικό κομμάτι που μειώνει συμπαντικά τον χρονο εκτέλεσης (και στο παράλληλο και στο σειριακό) είναι η μείωση των αριθμων που γινονται memory allocations.</p>
+<h2 id="%CE%B1%CF%80%CE%BF%CE%B4%CE%BF%CF%83%CE%B7-%CE%B1%CE%BB%CE%B3%CE%BF%CF%81%CE%AF%CE%B8%CE%BC%CE%BF%CF%85">Αποδοση αλγορίθμου</h2>
+<table>
+<thead>
+<tr>
+<th>Graph</th>
+<th>n</th>
+<th>m</th>
+<th>ncc</th>
+<th>serial</th>
+<th>openMp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Newman/celegansneural</td>
+<td>297</td>
+<td>2345</td>
+<td>57</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Pajek/foldoc</td>
+<td>13356</td>
+<td>120238</td>
+<td>71</td>
+<td>0.003121s</td>
+<td>0.021194s</td>
+</tr>
+<tr>
+<td>Tromble/language</td>
+<td>399130</td>
+<td>1216334</td>
+<td>2456</td>
+<td>0.097528s</td>
+<td>0.596788s</td>
+</tr>
+<tr>
+<td>LAW/eu-2005</td>
+<td>862664</td>
+<td>19235140</td>
+<td>90768</td>
+<td>0.612506s</td>
+<td>1.498135s</td>
+</tr>
+<tr>
+<td>SNAP/wiki-topcats</td>
+<td>1791489</td>
+<td>28511807</td>
+<td>1</td>
+<td>7.928697s</td>
+<td>11.442782s</td>
+</tr>
+<tr>
+<td>SNAP/sx-stackoverflow</td>
+<td>2601977</td>
+<td>36233450</td>
+<td>953658</td>
+<td>2.295690s</td>
+<td>4.845562s</td>
+</tr>
+<tr>
+<td>Gleich/wikipedia-20060925</td>
+<td>2983494</td>
+<td>37269096</td>
+<td>975731</td>
+<td>23.086584s</td>
+<td>23.838741s</td>
+</tr>
+<tr>
+<td>Gleich/wikipedia-20061104</td>
+<td>3148440</td>
+<td>39383235</td>
+<td>1040035</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Gleich/wikipedia-20070206</td>
+<td>3566907</td>
+<td>45030389</td>
+<td>1203340</td>
+<td>29.036076s</td>
+<td>25.950829s</td>
+</tr>
+<tr>
+<td>Gleich/wb-edu</td>
+<td>9845725</td>
+<td>57156537</td>
+<td>4269022</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LAW/indochina-2004</td>
+<td>7414866</td>
+<td>194109311</td>
+<td>1749052</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LAW/uk-2002</td>
+<td>18520486</td>
+<td>298113762</td>
+<td>3887634</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LAW/arabic-2005</td>
+<td>22744080</td>
+<td>639999458</td>
+<td>4000414</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LAW/uk-2005</td>
+<td>39459925</td>
+<td>936364282</td>
+<td>5811041</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SNAP/twitter7</td>
+<td>41652230</td>
+<td>1468365182</td>
+<td>8044728</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Αρχικά πίστευα ότι ο κώδικας σε OpenMp ήταν πολύ πιο γρήγορος άπο τον σειριακό αλλά στο τέλος παρατήρησα οτι στον σειριακό δεν είχα κάνει μια βελτίωση που μειώνει τον αριθμό τον allocations.</p>
+
+</body>
+</html>
